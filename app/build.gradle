@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.nav_oppgave_dagpenger"
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
