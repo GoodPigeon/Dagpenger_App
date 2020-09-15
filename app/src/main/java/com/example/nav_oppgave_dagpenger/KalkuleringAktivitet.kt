@@ -15,7 +15,7 @@ class KalkuleringAktivitet : AppCompatActivity() {
         setContentView(R.layout.aktivitet_kalkulering)
 
         //Konstante verdier
-        val grunnbelop = 101351 //Per 1. Mai 2020
+        val grunnbelop = 101351 //Per 1. Mai 2020, kan automatiseres dersom man har tilgjengelig database
         val maxArbeidsdager = 260
 
         //Design-elementer
