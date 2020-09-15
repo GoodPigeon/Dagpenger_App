@@ -2,5 +2,14 @@
     <string name="app_name">Dagpengekalkulator</string>
     <string name="beskrivelse">Fyll inn inntekter for de tre siste årene i feltene under</string>
     <string name="ikkeKrav">Du har dessverre ikke krav på dagpenger</string>
+    <string name="hjelp">
+        \nDagpenger kan man få hvis man har mistet jobben eller er permittert. \n\n
+        For å være kvalifisert til å få dagpenger må man gitt et grunnbeløp (G): \n
+        - ha hatt arbeidsinntekt minst det siste kalenderåret og enten \n
+        - ha hatt en inntekt siste året som er større enn 1.5G eller \n
+        - ha hatt en inntekt siste tre kalenderårene som er større enn 3G
+
+        \n\nI 2020 er G = 101351 kr \n
+        </string>
 
 </resources>
