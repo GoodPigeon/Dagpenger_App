@@ -1,12 +1,21 @@
 package com.example.nav_oppgave_dagpenger
 
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
+import android.view.animation.AlphaAnimation
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.text.set
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.aktivitet_kalkulering.*
 import java.util.*
+import kotlin.math.ceil
 import kotlin.math.max
 
 class KalkuleringAktivitet : AppCompatActivity() {
@@ -15,8 +24,8 @@ class KalkuleringAktivitet : AppCompatActivity() {
         setContentView(R.layout.aktivitet_kalkulering)
 
         //Konstante verdier
-        val grunnbelop = 101351 //Per 1. Mai 2020, kan automatiseres dersom man har tilgjengelig database
-        val maxArbeidsdager = 260
+        val grunnbelop:Double = 101351.0 //Per 1. Mai 2020, kan automatiseres dersom man har tilgjengelig database
+        val maxArbeidsdager:Double = 260.0
 
         //Design-elementer
         val aarfelt1 = findViewById<TextView>(R.id.aarfelt1)
@@ -26,6 +35,8 @@ class KalkuleringAktivitet : AppCompatActivity() {
         val lonnFelt2 = findViewById<EditText>(R.id.lonnfelt2)
         val lonnFelt3 = findViewById<EditText>(R.id.lonnfelt3)
         val kalkulerKnapp = findViewById<Button>(R.id.kalkulerKnapp)
+        val omstartKnapp = findViewById<Button>(R.id.omstartKnapp)
+        val spoersmaalKnapp = findViewById<FloatingActionButton>(R.id.spoersmaalKnapp)
         val resultatFelt = findViewById<EditText>(R.id.resultatFelt)
 
         //Regner ut hvilke år som skal stå i input-feltene basert på dagens dato.
@@ -49,49 +60,80 @@ class KalkuleringAktivitet : AppCompatActivity() {
             val kvalifisert2 = verdiAar1 > (1.5 * grunnbelop)
             val kvalifisert3 = verdiAar1 > 0
 
-            if(!kvalifisert1 && !kvalifisert2 && !kvalifisert3){
-                return(getString(R.string.ikkeKrav))
+            if(!kvalifisert3) {
+                return (getString(R.string.ikkeKrav))
             }
-            //Dersom man har tjent nok, vil dagsats regnes ut
+            else if(!kvalifisert1 && !kvalifisert2){
+                return (getString(R.string.ikkeKrav))
+            }
+
+            //Dersom man har kvalifisert seg, vil dagsats regnes ut
             else{
                 val dagpengegrunnlag1 = verdiAar1
                 val dagpengegrunnlag2 = (verdiAar1+verdiAar2+verdiAar3)/3
 
                 //Et grunnlag er større enn 6G, gir max dagpenger
                 if(dagpengegrunnlag1 >= (6*grunnbelop) || dagpengegrunnlag2 >= (6*grunnbelop)){
-                    return("kr " + ((6*grunnbelop)/maxArbeidsdager).toString())
+                    return("Du har krav på\n" + (ceil((6*grunnbelop)/maxArbeidsdager)).toLong().toString() + " kr/dag")
                 }
                 //Ellers regnes dagpenger ut fra størst grunnlag
                 else{
-                    val storstSats = max(dagpengegrunnlag1, dagpengegrunnlag2)
-                    return("kr " + (storstSats/maxArbeidsdager).toString())
+                    val storstSats  = max(dagpengegrunnlag1, dagpengegrunnlag2)
+                    return("Du har krav på\n" + (ceil(storstSats/maxArbeidsdager)).toLong().toString() + " kr/dag")
                 }
             }
         }
 
+        //Spørsmålstegn skal vise et felt som forklarer dagpengeordningen
+
         //Kalkuleringsknappen skal regne ut potensielle dagpenger og fremstille resultatet i feltet under
-        kalkulerKnapp.setOnClickListener {
-            if (lonnFelt1.text.toString() == ""){
-                lonnFelt1.setText("0")
+        kalkulerKnapp.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.setBackgroundColor(getColor(R.color.colorLightAccent))
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    v.setBackgroundColor(getColor(R.color.colorAccent))
+                    if (lonnFelt1.text.toString() == ""){
+                        lonnFelt1.setText("0")
+                    }
+                    if (lonnFelt2.text.toString() == ""){
+                        lonnFelt2.setText("0")
+                    }
+                    if (lonnFelt3.text.toString() == ""){
+                        lonnFelt3.setText("0")
+                    }
+                    val verdi1 = lonnFelt1.text.toString().toLong()
+                    val verdi2 = lonnFelt2.text.toString().toLong()
+                    val verdi3 = lonnFelt3.text.toString().toLong()
+                    val resultat = kalkulerDagpenger(verdi1, verdi2, verdi3)
+                    resultatFelt.setText(resultat)
+                }
             }
-            if (lonnFelt2.text.toString() == ""){
-                lonnFelt2.setText("0")
-            }
-            if (lonnFelt3.text.toString() == ""){
-                lonnFelt3.setText("0")
-            }
-            else {
-                val verdi1 = lonnFelt1.text.toString().toLong()
-                val verdi2 = lonnFelt2.text.toString().toLong()
-                val verdi3 = lonnFelt3.text.toString().toLong()
-                val resultat = kalkulerDagpenger(verdi1, verdi2, verdi3)
-                resultatFelt.setText(resultat)
-            }
+            false
+
         }
 
-        //TODO: Testing
+        //Omstartknapp skal tømme alle inputs og resultat
+        omstartKnapp.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.setBackgroundColor(getColor(R.color.colorLightGray))
+                    v.invalidate()
+                }
 
+                MotionEvent.ACTION_UP -> {
+                    v.setBackgroundColor(getColor(R.color.colorGray))
+                    v.invalidate()
+                    lonnFelt1.text = null
+                    lonnFelt2.text = null
+                    lonnFelt3.text = null
+                    resultatFelt.text = null
+                }
+            }
+            false
 
-
+        }
     }
 }
