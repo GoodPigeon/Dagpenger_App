@@ -57,31 +57,31 @@ Funksjon for å regne ut eventuelle dagpenger man har krav på
         try{
             //Utregning basert på siste året = 1924
             val test1 = kalkulerDagpenger(500000, 450000, 400000)
-            if(!test1.contains("1924")){
+            if(test1 != "1924"){
                 return("Feil i utregning 1!")
             }
 
             //Gjennomsnittlig utregning basert på tre siste år = 1411
             val test2 = kalkulerDagpenger(100000, 500000, 500000)
-            if(!test2.contains("1411")){
+            if(test2 != "1411"){
                 return("Feil i utregning 2!")
             }
 
             //Ikke kvalifisert = 0kr
             val test3 = kalkulerDagpenger(0, 1000000, 1000000)
-            if(!test3.contains("0")){
+            if(test3 != "0"){
                 return("Feil i utregning 3!")
             }
 
             //Ikke kvalifisert = 0kr
             val test4 = kalkulerDagpenger(10,0,0)
-            if(!test4.contains("0")){
+            if(test4 != "0"){
                 return("Feil i utregning 4!")
             }
 
             //max dagpenger = 2339kr
             val test5 = kalkulerDagpenger(10000000000, 10000000000, 10000000000)
-            if(!test5.contains("2339")){
+            if(test5 != "2339"){
                 return("Feil i utregning 5!")
             }
         }
